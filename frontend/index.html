@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbase — Ask your database in plain English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ---- DB Connect Panel ---- */
+  .db-connect-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .db-url-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .db-url-input:focus {
+    border-color: var(--amber);
+  }
+  .db-url-input::placeholder { color: var(--text-dim); }
+  .db-connect-btn {
+    width: 100%;
+    background: var(--amber);
+    color: #1a1208;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  .db-connect-btn:hover { background: var(--amber-soft); }
+  .db-connect-btn:disabled { opacity: 0.5; cursor: default; }
+  .db-connect-msg {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 6px 8px;
+    border-radius: 5px;
+    line-height: 1.4;
+  }
+  .db-connect-msg.success {
+    background: rgba(95,184,163,0.12);
+    color: var(--teal);
+    border: 1px solid rgba(95,184,163,0.25);
+  }
+  .db-connect-msg.error {
+    background: rgba(217,112,107,0.12);
+    color: var(--error);
+    border: 1px solid rgba(217,112,107,0.25);
+  }
+  .db-url-hints {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .db-url-hints span {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    opacity: 0.6;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .db-url-hints span:hover { opacity: 1; color: var(--amber); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">V</div>
+      <div>
+        <div class="brand-name">Verbase</div>
+        <div class="brand-tag">plain English in. SQL out.</div>
+      </div>
+    </div>
+
+    <!-- Database connect panel -->
+    <div class="db-connect-panel">
+      <div class="schema-heading">connect database</div>
+      <input
+        type="text"
+        id="dbUrlInput"
+        class="db-url-input"
+        placeholder="sqlite:///mydb.db"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="connectDbBtn" class="db-connect-btn">Connect</button>
+      <div id="dbConnectMsg" class="db-connect-msg" style="display:none"></div>
+      <div class="db-url-hints">
+        <span>sqlite:///path/to/file.db</span>
+        <span>postgresql://user:pass@host/db</span>
+        <span>mysql+pymysql://user:pass@host/db</span>
+      </div>
+    </div>
+
+    <div class="conn-status" id="connStatus">
+      <span class="dot"></span> connecting to database…
+    </div>
+
+    <div class="schema-panel">
+      <div class="schema-heading">detected schema</div>
+      <div class="schema-list" id="schemaList">
+        <div class="schema-empty">reading tables…</div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      Schema is read live from the connected database.<br>
+      Nothing here is hardcoded — point Verbase at a different DB and this list changes automatically.
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="thread" id="thread">
+      <div class="welcome">
+        <h1>Ask your data something.</h1>
+        <p>No SQL required. Type a question the way you'd ask a colleague —
+           Verbase writes the query, runs it safely, and shows you the answer.</p>
+        <div class="examples">
+          <button class="example-chip" data-q="Top 5 customers by total spend">Top 5 customers by total spend</button>
+          <button class="example-chip" data-q="How many orders were placed last month?">How many orders were placed last month?</button>
+          <button class="example-chip" data-q="Which product category sells the most?">Which product category sells the most?</button>
+          <button class="example-chip" data-q="cancelled orders ka percentage kitna hai">cancelled orders ka percentage kitna hai</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="composer" id="composer">
+      <input
+        type="text"
+        id="questionInput"
+        placeholder="Ask in plain English or Hinglish… e.g. 'sabse zyada order karne wale 5 customers'"
+        autocomplete="off"
+      />
+      <button type="submit" id="sendBtn">
+        <span>Ask</span>
+      </button>
+    </form>
+  </main>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
